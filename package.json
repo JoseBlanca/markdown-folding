@@ -1,0 +1,22 @@
+{
+  "name": "markdown-folding",
+  "main": "./lib/markdown-folding",
+  "version": "0.0.1",
+  "description": "Folds and unfolds markdown headings",
+  "keywords": [
+    "markdown"
+  ],
+  "activationCommands": {
+    "atom-workspace": [
+      "markdown-folding:dwim-toggle",
+      "markdown-folding:cycle"
+    ]
+  },
+  "repository": "https://github.com/jblanca/markdown-folding.git",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.9.0 <2.0.0"
+  },
+  "dependencies": {
+  }
+}

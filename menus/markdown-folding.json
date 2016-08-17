@@ -1,0 +1,26 @@
+{
+  "context-menu": {
+    "atom-text-editor": [
+      {
+        "label": "Cycle markdown-folding",
+        "command": "markdown-folding:cycle"
+      }
+    ]
+  },
+  "menu": [
+    {
+      "label": "Packages",
+      "submenu": [
+        {
+          "label": "Markdown Folding",
+          "submenu": [
+            {
+              "label": "Cycle",
+              "command": "markdown-folding:cycle"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
