@@ -1,17 +1,5 @@
 {CompositeDisposable, Point, Range, TextBuffer} = require 'atom'
 
-styleOk = (row) ->
-  editor = atom.workspace.getActiveTextEditor()
-  scope = editor.scopeDescriptorForBufferPosition([row,0])
-  !scope.scopes.some (text) ->
-    /^(markup.code|markup.raw|comment.block)/.test text
-
-styleOk2 = (row) ->
-  editor = atom.workspace.getActiveTextEditor()
-  scope = editor.scopeDescriptorForBufferPosition([row,0])
-  !scope.scopes.some (text) ->
-    /^comment.block/.test(text)
-
 module.exports = MarkdownFolder =
   subscriptions: null
 
@@ -31,10 +19,8 @@ module.exports = MarkdownFolder =
     editor = atom.workspace.getActiveTextEditor()
     row = editor.getCursorBufferPosition().row
     linetext = editor.lineTextForBufferRow(row)
-    if linetext.match(/^(#+)/) && styleOk(row)
+    if linetext.match(/^(#+)/)
       @cycle()
-    else if linetext.match(/^\s*```\w+/) && styleOk2(row)
-      @togglefenced()
     else
       event.abortKeyBinding()
 
