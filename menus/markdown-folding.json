@@ -4,6 +4,10 @@
       {
         "label": "Cycle markdown-folding",
         "command": "markdown-folding:cycle"
+      },
+      {
+        "label": "foldall_h1",
+        "command": "markdown-folding:foldall-h1"
       }
     ]
   },
@@ -17,6 +21,10 @@
             {
               "label": "Cycle",
               "command": "markdown-folding:cycle"
+            },
+            {
+              "label": "foldall-h1",
+              "command": "markdown-folding:foldall-h1"
             }
           ]
         }

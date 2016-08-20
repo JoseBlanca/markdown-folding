@@ -9,7 +9,8 @@
   "activationCommands": {
     "atom-workspace": [
       "markdown-folding:dwim-toggle",
-      "markdown-folding:cycle"
+      "markdown-folding:cycle",
+      "markdown-folding:foldall-h1"
     ]
   },
   "repository": "https://github.com/jblanca/markdown-folding.git",

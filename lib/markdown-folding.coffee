@@ -11,6 +11,7 @@ module.exports = MarkdownFolder =
     # Register command that toggles this view
     @subscriptions.add atom.commands.add 'atom-workspace', 'markdown-folding:dwim-toggle': (event) => @dwimtoggle(event)
     @subscriptions.add atom.commands.add 'atom-workspace', 'markdown-folding:cycle': => @cycle()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'markdown-folding:foldall-h1': => @foldall_h1()
 
   deactivate: ->
     @subscriptions.dispose()
@@ -28,6 +29,23 @@ module.exports = MarkdownFolder =
     editor = atom.workspace.getActiveTextEditor()
     line_text = editor.lineTextForBufferRow(line_row_number)
     if line_text.substring(0, 1) == '#'
+      return true
+    else
+      return false
+
+  lineIsHeaderLevel: (line_row_number, level) ->
+    editor = atom.workspace.getActiveTextEditor()
+    line_text = editor.lineTextForBufferRow(line_row_number)
+    if level == 1
+      header_string = '#'
+    else if level == 2
+      header_string = '##'
+    else if level == 3
+      header_string = '###'
+    else if level == 4
+      header_string = '###'
+
+    if line_text.substring(0, level) == header_string && line_text[level] != '#'
       return true
     else
       return false
@@ -157,3 +175,25 @@ module.exports = MarkdownFolder =
         @foldRowsButMaybeLast(curr_header_rows)
       else
         @unfoldRows(curr_header_rows)
+
+  foldall_h1: ->
+    level = 1
+    editor = atom.workspace.getActiveTextEditor()
+    level_line_nums = []
+    last_buffer_line = editor.getLastBufferRow()
+    for line_num in [0..last_buffer_line]
+      if @lineIsHeaderLevel(line_num, level)
+        level_line_nums.push(line_num)
+
+    n_lines = level_line_nums.length
+
+    for i in [0..n_lines]
+      first_section_line = level_line_nums[i]
+      if i < n_lines - 1
+        last_section_line = level_line_nums[i + 1] - 1
+      else if i == n_lines - 1
+        last_section_line = last_buffer_line
+      else
+        break
+      console.log [first_section_line, last_section_line]
+      @foldRowsButMaybeLast([first_section_line, last_section_line])
