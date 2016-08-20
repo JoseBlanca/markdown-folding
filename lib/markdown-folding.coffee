@@ -48,7 +48,7 @@ module.exports = MarkdownFolder =
 
   getCurrentHeaderLines: ->
     editor = atom.workspace.getActiveTextEditor()
-    curr_line_row = editor.getCurrentParagraphBufferRange().start.row
+    curr_line_row = editor.getCursorBufferPosition().row
     curr_line_text = editor.lineTextForBufferRow(curr_line_row)
     first_header_line_row = curr_line_row
 
