@@ -9,19 +9,21 @@ module.exports = MarkdownFolder =
     @subscriptions = new CompositeDisposable
 
     # Register command that toggles this view
-    @subscriptions.add atom.commands.add 'atom-workspace', 'markdown-folding:dwim-toggle': (event) => @dwimtoggle(event)
-    @subscriptions.add atom.commands.add 'atom-workspace', 'markdown-folding:cycle': => @cycle()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'markdown-folding:cycle': (event) => @cycle(event)
     @subscriptions.add atom.commands.add 'atom-workspace', 'markdown-folding:foldall-h1': => @foldall_h1()
 
   deactivate: ->
     @subscriptions.dispose()
 
-  dwimtoggle: (event) ->
+  cycle: (event) ->
+    if (typeof event == 'undefined')
+      @real_cycle
+
     editor = atom.workspace.getActiveTextEditor()
     row = editor.getCursorBufferPosition().row
     linetext = editor.lineTextForBufferRow(row)
     if linetext.match(/^(#+)/)
-      @cycle()
+      @real_cycle()
     else
       event.abortKeyBinding()
 
@@ -135,7 +137,7 @@ module.exports = MarkdownFolder =
 
     @foldRowsButMaybeLast(last_section)
 
-  cycle: ->
+  real_cycle: ->
     curr_header_rows = @getCurrentHeaderLines()
     if curr_header_rows[0] == -1
       throw new 'No header to fold'

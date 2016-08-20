@@ -8,7 +8,6 @@
   ],
   "activationCommands": {
     "atom-workspace": [
-      "markdown-folding:dwim-toggle",
       "markdown-folding:cycle",
       "markdown-folding:foldall-h1"
     ]
