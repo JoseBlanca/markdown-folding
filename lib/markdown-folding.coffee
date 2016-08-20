@@ -102,7 +102,6 @@ module.exports = MarkdownFolder =
 
   cycle: ->
     curr_header_rows = @getCurrentHeaderLines()
-    console.log 'caracola'
     if curr_header_rows[0] == -1
       throw new 'No header to fold'
 
