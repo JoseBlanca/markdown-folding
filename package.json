@@ -1,7 +1,7 @@
 {
   "name": "markdown-folding",
   "main": "./lib/markdown-folding",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Folds and unfolds markdown headings",
   "keywords": [
     "markdown"
@@ -17,6 +17,5 @@
   "engines": {
     "atom": ">=1.9.0 <2.0.0"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
