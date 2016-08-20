@@ -69,6 +69,15 @@ module.exports = MarkdownFolder =
 
     editor.setCursorBufferPosition(curr_pos)
 
+  foldRowsButMaybeLast: (line_numbers) ->
+    editor = atom.workspace.getActiveTextEditor()
+    last_row = line_numbers[1]
+    last_row_len = editor.buffer.lineLengthForRow(last_row)
+    if last_row_len < 1
+      @foldRows([line_numbers[0], last_row - 1])
+    else
+      @foldRows(line_numbers)
+
   unfoldRows: (line_numbers) ->
     editor = atom.workspace.getActiveTextEditor()
     first_row = line_numbers[0]
@@ -95,10 +104,18 @@ module.exports = MarkdownFolder =
     return line_num - 1
 
   foldSubHeaders: (line_row_numbers) ->
+    sections_to_fold = []
     for line_row in [line_row_numbers[0]..line_row_numbers[1]]
       if @lineIsHeader(line_row)
         last_line = @getLineBeforeNextHeader(line_row + 1)
-        @foldRows([line_row, last_line])
+        sections_to_fold.push([line_row, last_line])
+
+    last_section = sections_to_fold.pop()
+
+    for section_to_fold in sections_to_fold
+      @foldRows(section_to_fold)
+
+    @foldRowsButMaybeLast(last_section)
 
   cycle: ->
     curr_header_rows = @getCurrentHeaderLines()
@@ -130,13 +147,13 @@ module.exports = MarkdownFolder =
       if @lineIsFolded(curr_header_rows[0])
         @unfoldRows(curr_header_rows)
       else
-        @foldRows(curr_header_rows)
+        @foldRowsButMaybeLast(curr_header_rows)
     else
       # there are some subheaders
       if num_hidden_subheaders > 0
         @unfoldRows(curr_header_rows)
         @foldSubHeaders(curr_header_rows)
       else if num_folded_subheaders == 0
-        @foldRows(curr_header_rows)
+        @foldRowsButMaybeLast(curr_header_rows)
       else
         @unfoldRows(curr_header_rows)
