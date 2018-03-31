@@ -8,6 +8,10 @@
       {
         "label": "foldall_h1",
         "command": "markdown-folding:foldall-h1"
+      },
+      {
+        "label": "foldall_h2",
+        "command": "markdown-folding:foldall-h2"
       }
     ]
   },
@@ -25,6 +29,10 @@
             {
               "label": "foldall-h1",
               "command": "markdown-folding:foldall-h1"
+            },
+            {
+              "label": "foldall-h2",
+              "command": "markdown-folding:foldall-h2"
             }
           ]
         }
