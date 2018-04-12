@@ -77,7 +77,7 @@ module.exports = MarkdownFolder =
     first_row = line_numbers['first_row_number']
     last_row = line_numbers['last_row_number']
     if first_row >= last_row
-      throw new 'We only can fold more than one line'
+      throw('We only can fold more than one line')
 
     editor = atom.workspace.getActiveTextEditor()
 
@@ -107,7 +107,7 @@ module.exports = MarkdownFolder =
           subblock = {'first_row_number': line_row, 'last_row_number': last_line}
           subblocks_to_fold.push(subblock)
 
-    if DEBUG
+    if DEBUG == true
       console.log('subblocks_to_fold', subblocks_to_fold)
 
     for subblock_to_fold in subblocks_to_fold
@@ -147,7 +147,7 @@ module.exports = MarkdownFolder =
 
 
   do_cycle: ->
-    if DEBUG
+    if DEBUG == true
       console.log('doing cycle')
     editor = atom.workspace.getActiveTextEditor()
     curr_line_row = editor.getCursorBufferPosition().row
@@ -164,6 +164,9 @@ module.exports = MarkdownFolder =
     if DEBUG
       console.log('curr_header_rows', curr_header_rows)
 
+    if curr_header_rows['first_row_number'] >= curr_header_rows['last_row_number']
+      return
+
     editor = atom.workspace.getActiveTextEditor()
 
     if editor.isFoldedAtBufferRow(curr_header_rows['first_row_number'])
@@ -171,13 +174,12 @@ module.exports = MarkdownFolder =
     else
       current_block_is_folded = false
 
-    if DEBUG:
+    if DEBUG
       console.log('folded', current_block_is_folded)
 
     if current_block_is_folded
       @unfoldBlock(curr_header_rows)
     else
-
       lowest_header_level_unfolded = undefined
       lowest_header_sublevel = undefined
       for line_row in [curr_header_rows['first_row_number'] + 1..curr_header_rows['last_row_number']]
