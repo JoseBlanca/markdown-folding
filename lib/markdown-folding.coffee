@@ -1,6 +1,8 @@
 {CompositeDisposable, Point, Range, TextBuffer} = require 'atom'
 
-MAX_HEADER_CYCLE_FOLD_DEPTH = 4
+MAX_HEADER_CYCLE_FOLD_DEPTH = 10
+
+DEBUG = false
 
 module.exports = MarkdownFolder =
   subscriptions: null
@@ -74,6 +76,9 @@ module.exports = MarkdownFolder =
   foldBlock: (line_numbers) ->
     first_row = line_numbers['first_row_number']
     last_row = line_numbers['last_row_number']
+    if first_row >= last_row
+      throw new 'We only can fold more than one line'
+
     editor = atom.workspace.getActiveTextEditor()
 
     curr_pos = editor.getCursorBufferPosition()
@@ -87,7 +92,8 @@ module.exports = MarkdownFolder =
 
 
   foldToGivenHeaderLevelInBlock: (header_level, line_numbers) ->
-    console.log('folding to header level', header_level)
+    if DEBUG == true
+      console.log('folding block to header level', header_level)
     editor = atom.workspace.getActiveTextEditor()
 
     first_block_line = line_numbers['first_row_number']
@@ -97,13 +103,17 @@ module.exports = MarkdownFolder =
       line_text = editor.lineTextForBufferRow(line_row)
       if @lineIsHeader(line_row) && @getLineHeaderLevel(line_text) == header_level
         last_line = @getLineBeforeNextHeaderWithGivenLevel(line_row + 1, last_block_line, header_level)
-        subblock = {'first_row_number': line_row, 'last_row_number': last_line}
-        subblocks_to_fold.push(subblock)
+        if last_line > line_row && !@lineIsFolded(line_row)
+          subblock = {'first_row_number': line_row, 'last_row_number': last_line}
+          subblocks_to_fold.push(subblock)
+
+    if DEBUG
+      console.log('subblocks_to_fold', subblocks_to_fold)
 
     for subblock_to_fold in subblocks_to_fold
-
       @foldBlock(subblock_to_fold)
 
+    return subblocks_to_fold.length
 
   unfoldBlock: (line_numbers) ->
     editor = atom.workspace.getActiveTextEditor()
@@ -137,7 +147,8 @@ module.exports = MarkdownFolder =
 
 
   do_cycle: ->
-    console.log('doing cycle')
+    if DEBUG
+      console.log('doing cycle')
     editor = atom.workspace.getActiveTextEditor()
     curr_line_row = editor.getCursorBufferPosition().row
     curr_line_text = editor.lineTextForBufferRow(curr_line_row)
@@ -150,7 +161,8 @@ module.exports = MarkdownFolder =
 
     curr_header_rows = @getCurrentBlockRange()
 
-    console.log(curr_header_rows)
+    if DEBUG
+      console.log('curr_header_rows', curr_header_rows)
 
     editor = atom.workspace.getActiveTextEditor()
 
@@ -159,7 +171,9 @@ module.exports = MarkdownFolder =
     else
       current_block_is_folded = false
 
-    console.log('folded', current_block_is_folded)
+    if DEBUG:
+      console.log('folded', current_block_is_folded)
+
     if current_block_is_folded
       @unfoldBlock(curr_header_rows)
     else
@@ -186,8 +200,14 @@ module.exports = MarkdownFolder =
         if header_level == current_block_header_level + 1
           break
 
+      if DEBUG
+        console.log('lowest_header_level_unfolded, header_level', lowest_header_level_unfolded, header_level)
+        console.log('curr_header_rows', curr_header_rows)
+
       if lowest_header_level_unfolded != undefined && lowest_header_sublevel == lowest_header_level_unfolded
-        @foldToGivenHeaderLevelInBlock(lowest_header_level_unfolded, curr_header_rows)
+        subblocks_folded = @foldToGivenHeaderLevelInBlock(lowest_header_level_unfolded, curr_header_rows)
+        if subblocks_folded < 1
+          @foldBlock(curr_header_rows)
       else
         @foldBlock(curr_header_rows)
 
