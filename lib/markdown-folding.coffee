@@ -6,6 +6,12 @@ DEBUG = false
 
 module.exports = MarkdownFolder =
   subscriptions: null
+  config:
+    leave_blank:
+      title: 'Leave a Blank Line'
+      description: 'Leave a blank line if one is found on the line above'
+      type: 'boolean'
+      default: true
 
   activate: (state) ->
 
@@ -142,7 +148,9 @@ module.exports = MarkdownFolder =
       line_text = editor.lineTextForBufferRow(line_num)
       current_line_level = @getLineHeaderLevel(line_text)
       if current_line_level > 0 && current_line_level <= header_level
-        return line_num - 1
+        leave_blank = atom.config.get('markdown-folding.leave_blank')
+        lines = if leave_blank then 2 else 1
+        return line_num - lines
     return last_line_number
 
 
